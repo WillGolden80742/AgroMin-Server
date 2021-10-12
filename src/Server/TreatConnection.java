@@ -66,10 +66,10 @@ public class TreatConnection implements Runnable {
             }
             input.close();
             outPut.close();
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             System.out.println("Problema no tratamento da conexão com o cliente: " + socket.getInetAddress());
             System.out.println("Erro: " + ex.getMessage());
-            Logger.getLogger(TreatConnection.class.getName()).log(Level.SEVERE, null, ex);
+          //Logger.getLogger(TreatConnection.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             System.out.println("!!!Finalizando!!!");
             closeSocket(socket);
