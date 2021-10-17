@@ -45,6 +45,32 @@ public class clientDAO {
         return reply;
     }
 
+    public String[] biometricAuthenticated(String deviceID) {
+        String[] reply = {"Celular não cadastrado!","",""};
+        Connection con = ConnectionFactory.getConnection();
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            stmt = con.prepareStatement("SELECT count(nickName) as result, nickName, nomeCliente FROM clientes WHERE deviceID ='" + deviceID +"'");
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+                if (rs.getInt("result") == 1) {
+                    reply[0] = "OK";
+                    reply[1] = rs.getString("nickName");
+                    reply[2] = "Bem vindo, "+rs.getString("nomeCliente")+"!";
+                    System.out.println("Autenticado");
+                }
+            }
+        } catch (MySQLSyntaxErrorException ex) {
+            Logger.getLogger(contactsListDAO.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(contactsListDAO.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            ConnectionFactory.closeConnection(con, stmt, rs);
+        }
+        return reply;
+    }    
+    
     public int checkClient(String nickName) {
         Connection con = ConnectionFactory.getConnection();
         PreparedStatement stmt = null;
@@ -64,15 +90,16 @@ public class clientDAO {
         return count;
     }
 
-    public String createAccount(byte[] picture, String format, String name, String nickName, String password) {
+    public String createAccount(byte[] picture, String format, String name, String nickName, String password, String deviceID) {
         String reply;
         Connection con = ConnectionFactory.getConnection();
         PreparedStatement stmt = null;
         try {
-            stmt = con.prepareStatement("INSERT INTO clientes (clientes.nomeCliente,clientes.nickName,clientes.senha) VALUES (?,?,?)");
+            stmt = con.prepareStatement("INSERT INTO clientes (clientes.nomeCliente,clientes.nickName,clientes.senha,clientes.deviceID) VALUES (?,?,?,?)");
             stmt.setString(1, name);
             stmt.setString(2, nickName);
             stmt.setString(3, password);
+            stmt.setString(4, deviceID);            
             stmt.executeUpdate();
             reply = "OK";
         } catch (NullPointerException ex) {
@@ -187,5 +214,9 @@ public class clientDAO {
             ConnectionFactory.closeConnection(con, stmt, rs);
         }
         return profilePic;
+    }
+
+    public String biometricAuthenticated(String string, String string0) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

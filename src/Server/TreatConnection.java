@@ -40,8 +40,8 @@ public class TreatConnection implements Runnable {
             ObjectInputStream input = new ObjectInputStream(socket.getInputStream());
             ObjectOutputStream outPut = new ObjectOutputStream(socket.getOutputStream());
 
-            System.out.println("Tratando...");    
-            
+            System.out.println("Tratando...");
+
             while (states != States.EXIT) {
                 Communication communication = (Communication) input.readObject();
                 String operation = communication.getOperation();
@@ -69,7 +69,7 @@ public class TreatConnection implements Runnable {
         } catch (Exception ex) {
             System.out.println("Problema no tratamento da conexão com o cliente: " + socket.getInetAddress());
             System.out.println("Erro: " + ex.getMessage());
-          //Logger.getLogger(TreatConnection.class.getName()).log(Level.SEVERE, null, ex);
+            //Logger.getLogger(TreatConnection.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             System.out.println("!!!Finalizando!!!");
             closeSocket(socket);
@@ -83,6 +83,13 @@ public class TreatConnection implements Runnable {
         contactsListDAO contactDAO = new contactsListDAO();
         Communication reply = new Communication(op + "REPLY");
         switch (op) {
+            case "BIOMETRIC":
+                String[] biometricReply = cliDAO.biometricAuthenticated((String) communication.getParam("ANDROIDID"));
+                reply.setParam("BIOMETRICREPLY", biometricReply[0]);
+                reply.setParam("NICKNAME", biometricReply[1]);
+                reply.setParam("WELCOME", biometricReply[2]);
+                System.out.println("login reply :" + biometricReply[0]);
+                break;
             case "LOGIN":
                 String loginReply = cliDAO.authenticated((String) communication.getParam("nickName"), (String) communication.getParam("password"));
                 reply.setParam("LOGINREPLY", loginReply);
@@ -143,8 +150,9 @@ public class TreatConnection implements Runnable {
                 String formatC = (String) communication.getParam("format");
                 String nameC = (String) communication.getParam("name");
                 String nickNameC = (String) communication.getParam("nickName");
+                String deviceIDC = (String) communication.getParam("deviceID");
                 String passwordC = (String) communication.getParam("password");
-                reply.setParam("CREATEACCOUNTREPLY", cliDAO.createAccount(pictureC, formatC, nameC, nickNameC, passwordC));
+                reply.setParam("CREATEACCOUNTREPLY", cliDAO.createAccount(pictureC, formatC, nameC, nickNameC, passwordC, deviceIDC));
                 break;
             case "EDITACCOUNT":
                 byte[] pictureE = (byte[]) communication.getParam("picture");
