@@ -9,6 +9,7 @@ import Model.DAO.arquivoDAO;
 import Model.DAO.clientDAO;
 import Model.DAO.contactsListDAO;
 import Model.DAO.messagesDAO;
+import Model.DAO.propriedadeDAO;
 import Model.bean.Message;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -80,6 +81,7 @@ public class TreatConnection implements Runnable {
         messagesDAO mDAO = new messagesDAO();
         clientDAO cliDAO = new clientDAO();
         arquivoDAO arqDAO = new arquivoDAO();
+        propriedadeDAO propDAO = new propriedadeDAO();
         contactsListDAO contactDAO = new contactsListDAO();
         Communication reply = new Communication(op + "REPLY");
         switch (op) {
@@ -98,6 +100,14 @@ public class TreatConnection implements Runnable {
             case "READ":
                 contactsListDAO cDAO = new contactsListDAO();
                 reply.setParam("READREPLY", cDAO.read((String) communication.getParam("nickName")));
+                break;
+            case "PROPRIEDADES":
+                propDAO = new propriedadeDAO();
+                reply.setParam("PROPRIEDADESREPLY", propDAO.read());
+                break;
+            case "PROPRIEDADESELECTED":
+                propDAO = new propriedadeDAO();
+                reply.setParam("PROPRIEDADESELECTEDREPLY", propDAO.read((int) communication.getParam("propriedadeId")));
                 break;
             case "MESSAGENOTRECEIVED": {
                 try {
