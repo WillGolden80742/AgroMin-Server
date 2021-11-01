@@ -8,6 +8,7 @@ package Model.DAO;
 import ConnectionFactory.ConnectionFactory;
 import Model.bean.Endereco;
 import Model.bean.Propriedade;
+import com.mysql.jdbc.exceptions.MySQLSyntaxErrorException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -22,6 +23,16 @@ import java.util.logging.Logger;
  * @author William
  */
 public class propriedadeDAO {
+
+    private String status;
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
     public List<Propriedade> read() {
 
@@ -93,4 +104,65 @@ public class propriedadeDAO {
         }
         return propriedades;
     }
+
+    public String enderecoEdit(Endereco end, int id) {
+        deleteEnd(id);
+        Connection con = ConnectionFactory.getConnection();
+        PreparedStatement stmt = null;
+
+        try {
+            stmt = con.prepareStatement("INSERT INTO endereco (propriedadeId,endereco,complemento,referencia) VALUES (?,?,?,?)");
+            stmt.setInt(1, id);
+            stmt.setString(2, end.getEndereco());
+            stmt.setString(3, end.getComplemento());
+            stmt.setString(4, end.getReferencia());
+            stmt.executeUpdate();
+            return "Endereço editado com sucesso!";
+        } catch (SQLException ex) {
+            Logger.getLogger(contactsListDAO.class.getName()).log(Level.SEVERE, null, ex);
+            setStatus(ex.toString());
+            return "Erro";
+        } finally {
+            ConnectionFactory.closeConnection(con, stmt);
+        }
+    }
+
+    public String propriedadeEdit(Propriedade prop) {
+        Connection con = ConnectionFactory.getConnection();
+        PreparedStatement stmt = null;
+
+        try {
+            stmt = con.prepareStatement("UPDATE propriedades SET  nome = ?,destino =?, numeroEmpregados = ? , maquinas = ? , nivelAutomacao = ? WHERE propriedadeId = ?");
+            stmt.setString(1,prop.getNome());
+            stmt.setInt(2,prop.getDestino());
+            stmt.setInt(3,prop.getNumeroEmpregados());
+            stmt.setInt(4, prop.getMaquinas());
+            stmt.setInt(5,prop.getNivelAutomacao());
+            stmt.setInt(6,prop.getPropriedadeId());
+            stmt.executeUpdate();
+            return "Propriedade editado com sucesso!";
+        } catch (SQLException ex) {
+            Logger.getLogger(contactsListDAO.class.getName()).log(Level.SEVERE, null, ex);
+            setStatus(ex.toString());
+            return "Erro";
+        } finally {
+            ConnectionFactory.closeConnection(con, stmt);
+        }
+    }
+
+    public void deleteEnd(int id) {
+        Connection con = ConnectionFactory.getConnection();
+        PreparedStatement stmt = null;
+        try {
+            stmt = con.prepareStatement("DELETE FROM endereco WHERE propriedadeId = '" + id + "'");
+            setStatus("SUCCESSFULL");
+            stmt.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(contactsListDAO.class.getName()).log(Level.SEVERE, null, ex);
+            setStatus(ex.toString());
+        } finally {
+            ConnectionFactory.closeConnection(con, stmt);
+        }
+    }
+
 }

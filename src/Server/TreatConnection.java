@@ -10,7 +10,9 @@ import Model.DAO.clientDAO;
 import Model.DAO.contactsListDAO;
 import Model.DAO.messagesDAO;
 import Model.DAO.propriedadeDAO;
+import Model.bean.Endereco;
 import Model.bean.Message;
+import Model.bean.Propriedade;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -109,36 +111,44 @@ public class TreatConnection implements Runnable {
                 propDAO = new propriedadeDAO();
                 reply.setParam("PROPRIEDADESELECTEDREPLY", propDAO.read((int) communication.getParam("propriedadeId")));
                 break;
-            case "MESSAGENOTRECEIVED": {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(TreatConnection.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                reply.setParam("MESSAGENOTRECEIVEDREPLY", mDAO.readNotReceived((String) communication.getParam("nickName"), (String) communication.getParam("contactNickName")));
+            case "ENDERECOUPDATE":
+                propDAO = new propriedadeDAO();
+                reply.setParam("ENDERECOUPDATEREPLY", propDAO.enderecoEdit((Endereco) communication.getParam("endereco"),(int) communication.getParam("propriedadeId")));
                 break;
-            }
-            case "MESSAGENOTRECEIVEDALLCONTACTS": {
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(TreatConnection.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                reply.setParam("MESSAGENOTRECEIVEDALLCONTACTSREPLY", mDAO.readNotReceivedAllContacts((String) communication.getParam("nickName")));
+            case "PROPRIEDADEUPDATE":
+                propDAO = new propriedadeDAO();
+                reply.setParam("PROPRIEDADEUPDATEREPLY", propDAO.propriedadeEdit((Propriedade) communication.getParam("propriedade")));
                 break;
-            }
-            case "MESSAGE":
-                List<Message> message = mDAO.read((String) communication.getParam("nickName"), (String) communication.getParam("contactNickName"));
-                reply.setParam("MESSAGEREPLY", message);
-                break;
-            case "CREATEMESSAGE":
-                mDAO.create((Message) communication.getParam("SENDEDMESSAGE"));
-                reply.setParam("STATUSMESSAGE", mDAO.getStatus());
-                break;
-            case "DELETEMESSAGE":
-                mDAO.delete((int) communication.getParam("idMessage"), (String) communication.getParam("msgFrom"), (String) communication.getParam("msgTo"));
-                reply.setParam("STATUSMESSAGE", mDAO.getStatus());
-                break;
+//            case "MESSAGENOTRECEIVED": {
+//                try {
+//                    Thread.sleep(1000);
+//                } catch (InterruptedException ex) {
+//                    Logger.getLogger(TreatConnection.class.getName()).log(Level.SEVERE, null, ex);
+//                }
+//                reply.setParam("MESSAGENOTRECEIVEDREPLY", mDAO.readNotReceived((String) communication.getParam("nickName"), (String) communication.getParam("contactNickName")));
+//                break;
+//            }
+//            case "MESSAGENOTRECEIVEDALLCONTACTS": {
+//                try {
+//                    Thread.sleep(2000);
+//                } catch (InterruptedException ex) {
+//                    Logger.getLogger(TreatConnection.class.getName()).log(Level.SEVERE, null, ex);
+//                }
+//                reply.setParam("MESSAGENOTRECEIVEDALLCONTACTSREPLY", mDAO.readNotReceivedAllContacts((String) communication.getParam("nickName")));
+//                break;
+//            }
+//            case "MESSAGE":
+//                List<Message> message = mDAO.read((String) communication.getParam("nickName"), (String) communication.getParam("contactNickName"));
+//                reply.setParam("MESSAGEREPLY", message);
+//                break;
+//            case "CREATEMESSAGE":
+//                mDAO.create((Message) communication.getParam("SENDEDMESSAGE"));
+//                reply.setParam("STATUSMESSAGE", mDAO.getStatus());
+//                break;
+//            case "DELETEMESSAGE":
+//                mDAO.delete((int) communication.getParam("idMessage"), (String) communication.getParam("msgFrom"), (String) communication.getParam("msgTo"));
+//                reply.setParam("STATUSMESSAGE", mDAO.getStatus());
+//                break;
             case "DOWNLOADFILE":
                 reply.setParam("DOWNLOADFILEREPLY", arqDAO.read((String) communication.getParam("nomeHash")));
                 break;
