@@ -8,7 +8,6 @@ package Model.DAO;
 import ConnectionFactory.ConnectionFactory;
 import Model.bean.Endereco;
 import Model.bean.Propriedade;
-import com.mysql.jdbc.exceptions.MySQLSyntaxErrorException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -34,7 +33,16 @@ public class propriedadeDAO {
         this.status = status;
     }
 
-    public List<Propriedade> read() {
+    public List<Propriedade> read(String nome, String cnpj) {
+
+        if (!nome.equals("") && !cnpj.equals("")) {
+            nome = "where propriedades.nome like '%" + nome + "%' and propriedades.cpnj like '%" + cnpj + "%'";
+            cnpj = "";
+        } else if (!nome.equals("")) {
+            nome = "where propriedades.nome like '%" + nome + "%'";
+        } else if (!cnpj.equals("")) {
+            cnpj = "where propriedades.cpnj like '%" + cnpj + "%'";
+        }
 
         Connection con = ConnectionFactory.getConnection();
 
@@ -43,7 +51,7 @@ public class propriedadeDAO {
         List<Propriedade> propriedades = new ArrayList<>();
 
         try {
-            stmt = con.prepareStatement("SELECT * FROM propriedades");
+            stmt = con.prepareStatement("SELECT * FROM propriedades " + nome + cnpj);
             rs = stmt.executeQuery();
             while (rs.next()) {
                 Propriedade p = new Propriedade();
@@ -58,6 +66,10 @@ public class propriedadeDAO {
             ConnectionFactory.closeConnection(con, stmt, rs);
         }
         return propriedades;
+    }
+
+    public List<Propriedade> read() {
+        return read("", "");
     }
 
     public Propriedade read(int id) {
@@ -133,12 +145,12 @@ public class propriedadeDAO {
 
         try {
             stmt = con.prepareStatement("UPDATE propriedades SET  nome = ?,destino =?, numeroEmpregados = ? , maquinas = ? , nivelAutomacao = ? WHERE propriedadeId = ?");
-            stmt.setString(1,prop.getNome());
-            stmt.setInt(2,prop.getDestino());
-            stmt.setInt(3,prop.getNumeroEmpregados());
+            stmt.setString(1, prop.getNome());
+            stmt.setInt(2, prop.getDestino());
+            stmt.setInt(3, prop.getNumeroEmpregados());
             stmt.setInt(4, prop.getMaquinas());
-            stmt.setInt(5,prop.getNivelAutomacao());
-            stmt.setInt(6,prop.getPropriedadeId());
+            stmt.setInt(5, prop.getNivelAutomacao());
+            stmt.setInt(6, prop.getPropriedadeId());
             stmt.executeUpdate();
             return "Propriedade editado com sucesso!";
         } catch (SQLException ex) {

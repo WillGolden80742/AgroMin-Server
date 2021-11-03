@@ -8,9 +8,11 @@ package Server;
 import Model.DAO.arquivoDAO;
 import Model.DAO.clientDAO;
 import Model.DAO.contactsListDAO;
+import Model.DAO.impostosDAO;
 import Model.DAO.messagesDAO;
 import Model.DAO.propriedadeDAO;
 import Model.bean.Endereco;
+import Model.bean.Imposto;
 import Model.bean.Message;
 import Model.bean.Propriedade;
 import java.io.IOException;
@@ -84,6 +86,7 @@ public class TreatConnection implements Runnable {
         clientDAO cliDAO = new clientDAO();
         arquivoDAO arqDAO = new arquivoDAO();
         propriedadeDAO propDAO = new propriedadeDAO();
+        impostosDAO impDAO = new impostosDAO();
         contactsListDAO contactDAO = new contactsListDAO();
         Communication reply = new Communication(op + "REPLY");
         switch (op) {
@@ -104,8 +107,10 @@ public class TreatConnection implements Runnable {
                 reply.setParam("READREPLY", cDAO.read((String) communication.getParam("nickName")));
                 break;
             case "PROPRIEDADES":
-                propDAO = new propriedadeDAO();
-                reply.setParam("PROPRIEDADESREPLY", propDAO.read());
+                String nome = (String) communication.getParam("nome");
+                String cnpj = (String) communication.getParam("cnpj");
+                reply.setParam("PROPRIEDADESREPLY", propDAO.read(nome, cnpj));
+                reply.setParam("IMPOSTOSREPLY", impDAO.read(nome, cnpj));
                 break;
             case "PROPRIEDADESELECTED":
                 propDAO = new propriedadeDAO();
@@ -113,7 +118,7 @@ public class TreatConnection implements Runnable {
                 break;
             case "ENDERECOUPDATE":
                 propDAO = new propriedadeDAO();
-                reply.setParam("ENDERECOUPDATEREPLY", propDAO.enderecoEdit((Endereco) communication.getParam("endereco"),(int) communication.getParam("propriedadeId")));
+                reply.setParam("ENDERECOUPDATEREPLY", propDAO.enderecoEdit((Endereco) communication.getParam("endereco"), (int) communication.getParam("propriedadeId")));
                 break;
             case "PROPRIEDADEUPDATE":
                 propDAO = new propriedadeDAO();
@@ -206,7 +211,8 @@ public class TreatConnection implements Runnable {
             System.out.println("Iniciando thread do cliente +" + socket.getInetAddress());
             treatConnection(socket);
         } catch (IOException | ClassNotFoundException ex) {
-            Logger.getLogger(TreatConnection.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(TreatConnection.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
     }
 
