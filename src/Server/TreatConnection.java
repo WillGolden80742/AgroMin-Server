@@ -110,11 +110,16 @@ public class TreatConnection implements Runnable {
                 String nome = (String) communication.getParam("nome");
                 String cnpj = (String) communication.getParam("cnpj");
                 reply.setParam("PROPRIEDADESREPLY", propDAO.read(nome, cnpj));
-                reply.setParam("IMPOSTOSREPLY", impDAO.read(nome, cnpj));
                 break;
             case "PROPRIEDADESELECTED":
-                propDAO = new propriedadeDAO();
+                int propriedadeId = (int) communication.getParam("propriedadeId");
+                reply.setParam("IMPOSTOSTOTALREPLY", impDAO.total(propriedadeId));
+                reply.setParam("IMPOSTOSREPLY", impDAO.read(propriedadeId));
                 reply.setParam("PROPRIEDADESELECTEDREPLY", propDAO.read((int) communication.getParam("propriedadeId")));
+                break;
+            case "PROPRIEDADEDELETE":
+                int propriedadeIdDelete = (int) communication.getParam("propriedadeId");
+                reply.setParam("PROPRIEDADEDELETEREPLY", (String) propDAO.delete(propriedadeIdDelete));
                 break;
             case "ENDERECOUPDATE":
                 propDAO = new propriedadeDAO();

@@ -177,4 +177,21 @@ public class propriedadeDAO {
         }
     }
 
+    public String delete(int id) {
+        String delete;
+        Connection con = ConnectionFactory.getConnection();
+        PreparedStatement stmt = null;
+        try {
+            stmt = con.prepareStatement("DELETE FROM propriedades WHERE propriedadeId = '" + id + "'");
+            stmt.executeUpdate();
+            delete = "Propriedade deletado com sucesso!";
+        } catch (SQLException ex) {
+            Logger.getLogger(contactsListDAO.class.getName()).log(Level.SEVERE, null, ex);
+            delete = "Erro!";
+        } finally {
+            ConnectionFactory.closeConnection(con, stmt);
+        }
+        return delete;
+    }
+
 }

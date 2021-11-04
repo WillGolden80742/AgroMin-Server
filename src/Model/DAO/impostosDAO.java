@@ -17,7 +17,7 @@ import java.util.logging.Logger;
  */
 public class impostosDAO {
 
-    public List<Imposto> read(String nome, String cnpj) {
+    public List<Imposto> read(int id) {
 
 //        if (!nome.equals("") && !cnpj.equals("")) {
 //            nome = "where propriedades.nome like '%" + nome + "%' and propriedades.cpnj like '%" + cnpj + "%'";
@@ -27,7 +27,6 @@ public class impostosDAO {
 //        } else if (!cnpj.equals("")) {
 //            cnpj = "where propriedades.cpnj like '%" + cnpj + "%'";
 //        }
-
         Connection con = ConnectionFactory.getConnection();
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -55,7 +54,25 @@ public class impostosDAO {
         return impostos;
     }
 
-    public List<Imposto> read() {
-        return read("", "");
+    public double total(int id) {
+
+        Connection con = ConnectionFactory.getConnection();
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        double total = 0;
+
+        try {
+            stmt = con.prepareStatement("SELECT SUM(impostos.valor) as Total FROM impostos");
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+               total = rs.getDouble("Total");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(contactsListDAO.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            ConnectionFactory.closeConnection(con, stmt, rs);
+        }
+        return total;
     }
 }
