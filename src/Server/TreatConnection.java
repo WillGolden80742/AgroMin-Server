@@ -122,12 +122,16 @@ public class TreatConnection implements Runnable {
                 reply.setParam("PROPRIEDADEDELETEREPLY", (String) propDAO.delete(propriedadeIdDelete));
                 break;
             case "ENDERECOUPDATE":
-                propDAO = new propriedadeDAO();
                 reply.setParam("ENDERECOUPDATEREPLY", propDAO.enderecoEdit((Endereco) communication.getParam("endereco"), (int) communication.getParam("propriedadeId")));
                 break;
             case "PROPRIEDADEUPDATE":
-                propDAO = new propriedadeDAO();
                 reply.setParam("PROPRIEDADEUPDATEREPLY", propDAO.propriedadeEdit((Propriedade) communication.getParam("propriedade")));
+                break;
+            case "CNPJCHECK":
+                reply.setParam("CNPJCHECKREPLY", propDAO.checkCNPJ((String) communication.getParam("cnpj")));
+                break;
+            case "PROPRIEDADECREATE":
+                reply.setParam("PROPRIEDADECREATEREPLY", propDAO.create((Propriedade) communication.getParam("propriedade")));
                 break;
 //            case "MESSAGENOTRECEIVED": {
 //                try {

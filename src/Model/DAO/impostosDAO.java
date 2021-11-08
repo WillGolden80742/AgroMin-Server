@@ -19,14 +19,6 @@ public class impostosDAO {
 
     public List<Imposto> read(int id) {
 
-//        if (!nome.equals("") && !cnpj.equals("")) {
-//            nome = "where propriedades.nome like '%" + nome + "%' and propriedades.cpnj like '%" + cnpj + "%'";
-//            cnpj = "";
-//        } else if (!nome.equals("")) {
-//            nome = "where propriedades.nome like '%" + nome + "%'";
-//        } else if (!cnpj.equals("")) {
-//            cnpj = "where propriedades.cpnj like '%" + cnpj + "%'";
-//        }
         Connection con = ConnectionFactory.getConnection();
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -34,7 +26,7 @@ public class impostosDAO {
         List<Imposto> impostos = new ArrayList<>();
 
         try {
-            stmt = con.prepareStatement("SELECT tipo.nome, tipo.tipo, subsidio, valor, pago, lancamento FROM impostos INNER JOIN tipo on tipo.tipoID = impostos.tipo");
+            stmt = con.prepareStatement("SELECT tipo.nome, tipo.tipo, subsidio, valor, pago, lancamento FROM impostos INNER JOIN tipo on tipo.tipoID = impostos.tipo where propriedadeId ='"+id+"'");
             rs = stmt.executeQuery();
             while (rs.next()) {
                 Imposto i = new Imposto();
@@ -63,7 +55,7 @@ public class impostosDAO {
         double total = 0;
 
         try {
-            stmt = con.prepareStatement("SELECT SUM(impostos.valor) as Total FROM impostos");
+            stmt = con.prepareStatement("SELECT SUM(impostos.valor) as Total FROM impostos where propriedadeId ='"+id+"'");
             rs = stmt.executeQuery();
             while (rs.next()) {
                total = rs.getDouble("Total");

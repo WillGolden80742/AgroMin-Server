@@ -88,7 +88,6 @@ public class propriedadeDAO {
                 propriedades.setPropriedadeId(rs.getInt("propriedadeId"));
                 propriedades.setCpnj(rs.getString("cpnj"));
                 propriedades.setNome(rs.getString("nome"));
-
                 propriedades.setDestino(rs.getInt("destino"));
                 propriedades.setNumeroEmpregados(rs.getInt("numeroEmpregados"));
                 propriedades.setMaquinas(rs.getInt("maquinas"));
@@ -160,6 +159,47 @@ public class propriedadeDAO {
         } finally {
             ConnectionFactory.closeConnection(con, stmt);
         }
+    }
+
+    public String create(Propriedade prop) {
+        Connection con = ConnectionFactory.getConnection();
+        PreparedStatement stmt = null;
+        try {
+            stmt = con.prepareStatement("INSERT INTO propriedades (nome,destino,numeroEmpregados,maquinas,nivelAutomacao,cpnj) VALUES (?,?,?,?,?,?)");
+            stmt.setString(1, prop.getNome());
+            stmt.setInt(2, prop.getDestino());
+            stmt.setInt(3, prop.getNumeroEmpregados());
+            stmt.setInt(4, prop.getMaquinas());
+            stmt.setInt(5, prop.getNivelAutomacao());
+            stmt.setString(6, prop.getCpnj());
+            stmt.executeUpdate();
+            return "Propriedade criada com sucesso!";
+        } catch (SQLException ex) {
+            Logger.getLogger(contactsListDAO.class.getName()).log(Level.SEVERE, null, ex);
+            setStatus(ex.toString());
+            return "Erro";
+        } finally {
+            ConnectionFactory.closeConnection(con, stmt);
+        }
+    }
+
+    public int checkCNPJ(String cnpj) {
+        Connection con = ConnectionFactory.getConnection();
+        PreparedStatement stmt = null;
+        ResultSet rs;
+        int count = 0;
+        try {
+            stmt = con.prepareStatement("SELECT COUNT(propriedades.cpnj) AS cpnj  FROM propriedades WHERE propriedades.cpnj LIKE  '" + cnpj + "'");
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+                count = rs.getInt("cpnj");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(contactsListDAO.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            ConnectionFactory.closeConnection(con, stmt);
+        }
+        return count;
     }
 
     public void deleteEnd(int id) {
