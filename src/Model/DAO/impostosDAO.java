@@ -26,13 +26,14 @@ public class impostosDAO {
         List<Imposto> impostos = new ArrayList<>();
 
         try {
-            stmt = con.prepareStatement("SELECT tipo.nome, tipo.tipo, subsidio, valor, pago, lancamento FROM impostos INNER JOIN tipo on tipo.tipoID = impostos.tipo where propriedadeId ='"+id+"'");
+            stmt = con.prepareStatement("SELECT impostos.impostoID, tipo.nome, tipo.tipo, subsidio, valor, pago, lancamento FROM impostos INNER JOIN tipo on tipo.tipoID = impostos.tipo where propriedadeId ='" + id + "'");
             rs = stmt.executeQuery();
             while (rs.next()) {
                 Imposto i = new Imposto();
+                i.setId(rs.getInt("impostos.impostoID"));
                 i.setNome(rs.getString("tipo.nome"));
                 i.setTipo(rs.getString("tipo.tipo"));
-                i.setSubsidio(rs.getInt("subsidio"));
+                i.setSubsidio(rs.getDouble("subsidio"));
                 i.setValorBruto(rs.getDouble("valor"));
                 i.setPago(rs.getInt("pago"));
                 i.setLancamento(rs.getString("lancamento"));
@@ -46,6 +47,30 @@ public class impostosDAO {
         return impostos;
     }
 
+    public String impostoEdit(List<Imposto> imp) {
+        String retunEdit = "";
+        for (Imposto i : imp) {
+            Connection con = ConnectionFactory.getConnection();
+            PreparedStatement stmt = null;
+            try {
+                stmt = con.prepareStatement("UPDATE impostos SET  valor = ?, subsidio = ?, pago = ? WHERE impostoID = ?");
+                stmt.setDouble(1, i.getValorBruto());
+                stmt.setDouble(2, i.getSubsidio());
+                stmt.setDouble(3, i.getPago());
+                stmt.setInt(4, i.getId());
+                stmt.executeUpdate();
+                retunEdit = "Imposto editado com sucesso!";
+                System.out.println(retunEdit + " impostoID : " + i.getId());
+            } catch (SQLException ex) {
+                Logger.getLogger(contactsListDAO.class.getName()).log(Level.SEVERE, null, ex);
+                retunEdit = "Erro";
+            } finally {
+                ConnectionFactory.closeConnection(con, stmt);
+            }
+        }
+        return retunEdit;
+    }
+
     public double total(int id) {
 
         Connection con = ConnectionFactory.getConnection();
@@ -55,10 +80,10 @@ public class impostosDAO {
         double total = 0;
 
         try {
-            stmt = con.prepareStatement("SELECT SUM(impostos.valor) as Total FROM impostos where propriedadeId ='"+id+"'");
+            stmt = con.prepareStatement("SELECT SUM(impostos.valor) as Total FROM impostos where propriedadeId ='" + id + "'");
             rs = stmt.executeQuery();
             while (rs.next()) {
-               total = rs.getDouble("Total");
+                total = rs.getDouble("Total");
             }
         } catch (SQLException ex) {
             Logger.getLogger(contactsListDAO.class.getName()).log(Level.SEVERE, null, ex);

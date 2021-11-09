@@ -10,13 +10,18 @@ public class Imposto implements Serializable {
 
     private String nome;
     private String tipo;
-    private int subsidio;
+    private double subsidio;
     private Double valor;
     private int pago;
     private String lancamento;
+    private int id;
 
-    public int getSubsidio() {
-        return subsidio;
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public double getValorSubsidiado() {
@@ -27,8 +32,12 @@ public class Imposto implements Serializable {
         return (valor - ((valor * subsidio) / 100));
     }
 
-    public void setSubsidio(int subsidio) {
+    public void setSubsidio(double subsidio) {
         this.subsidio = subsidio;
+    }
+
+    public double getSubsidio() {
+        return subsidio;
     }
 
     public Double getValorBruto() {

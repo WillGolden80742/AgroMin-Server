@@ -13,7 +13,6 @@ import Model.DAO.messagesDAO;
 import Model.DAO.propriedadeDAO;
 import Model.bean.Endereco;
 import Model.bean.Imposto;
-import Model.bean.Message;
 import Model.bean.Propriedade;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -127,6 +126,9 @@ public class TreatConnection implements Runnable {
             case "PROPRIEDADEUPDATE":
                 reply.setParam("PROPRIEDADEUPDATEREPLY", propDAO.propriedadeEdit((Propriedade) communication.getParam("propriedade")));
                 break;
+            case "IMPOSTOUPDATE":
+                List<Imposto> imp = (List<Imposto>) communication.getParam("imposto");
+                reply.setParam("IMPOSTOUPDATEREPLY", impDAO.impostoEdit(imp));
             case "CNPJCHECK":
                 reply.setParam("CNPJCHECKREPLY", propDAO.checkCNPJ((String) communication.getParam("cnpj")));
                 break;

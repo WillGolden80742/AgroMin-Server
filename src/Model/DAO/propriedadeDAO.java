@@ -7,6 +7,7 @@ package Model.DAO;
 
 import ConnectionFactory.ConnectionFactory;
 import Model.bean.Endereco;
+import Model.bean.Imposto;
 import Model.bean.Propriedade;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -139,9 +140,9 @@ public class propriedadeDAO {
     }
 
     public String propriedadeEdit(Propriedade prop) {
+
         Connection con = ConnectionFactory.getConnection();
         PreparedStatement stmt = null;
-
         try {
             stmt = con.prepareStatement("UPDATE propriedades SET  nome = ?,destino =?, numeroEmpregados = ? , maquinas = ? , nivelAutomacao = ? WHERE propriedadeId = ?");
             stmt.setString(1, prop.getNome());
