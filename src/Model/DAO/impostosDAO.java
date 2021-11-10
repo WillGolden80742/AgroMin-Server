@@ -2,6 +2,7 @@ package Model.DAO;
 
 import ConnectionFactory.ConnectionFactory;
 import Model.bean.Imposto;
+import Model.bean.Tipo;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -26,15 +27,19 @@ public class impostosDAO {
         List<Imposto> impostos = new ArrayList<>();
 
         try {
-            stmt = con.prepareStatement("SELECT impostos.impostoID, tipo.nome, tipo.tipo, subsidio, valor, pago, lancamento FROM impostos INNER JOIN tipo on tipo.tipoID = impostos.tipo where propriedadeId ='" + id + "'");
+            stmt = con.prepareStatement("SELECT impostos.impostoID, tipo.tipoID, tipo.nome, tipo.tipo, subsidio, valor, pago, lancamento FROM impostos INNER JOIN tipo on tipo.tipoID = impostos.tipo where propriedadeId ='" + id + "'");
             rs = stmt.executeQuery();
             while (rs.next()) {
+                Tipo t = new Tipo();
+                t.setTipoId(rs.getInt("tipo.tipoID"));
+                t.setNome(rs.getString("tipo.nome"));
+                t.setTipo(rs.getString("tipo.tipo"));
+
                 Imposto i = new Imposto();
                 i.setId(rs.getInt("impostos.impostoID"));
-                i.setNome(rs.getString("tipo.nome"));
-                i.setTipo(rs.getString("tipo.tipo"));
                 i.setSubsidio(rs.getDouble("subsidio"));
                 i.setValorBruto(rs.getDouble("valor"));
+                i.setTipo(t);
                 i.setPago(rs.getInt("pago"));
                 i.setLancamento(rs.getString("lancamento"));
                 impostos.add(i);
@@ -47,25 +52,71 @@ public class impostosDAO {
         return impostos;
     }
 
-    public String impostoEdit(List<Imposto> imp) {
+    public List<Tipo> readTipo() {
+        Connection con = ConnectionFactory.getConnection();
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        List<Tipo> tipos = new ArrayList<>();
+
+        try {
+            stmt = con.prepareStatement("SELECT tipo.tipoID, tipo.nome, tipo.tipo FROM tipo");
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+                Tipo t = new Tipo();
+                t.setTipoId(rs.getInt("tipo.tipoID"));
+                t.setNome(rs.getString("tipo.nome"));
+                t.setTipo(rs.getString("tipo.tipo"));
+                tipos.add(t);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(contactsListDAO.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            ConnectionFactory.closeConnection(con, stmt, rs);
+        }
+        return tipos;
+    }
+
+    public String impostoEdit(List<Imposto> imp, int id) {
         String retunEdit = "";
         for (Imposto i : imp) {
-            Connection con = ConnectionFactory.getConnection();
-            PreparedStatement stmt = null;
-            try {
-                stmt = con.prepareStatement("UPDATE impostos SET  valor = ?, subsidio = ?, pago = ? WHERE impostoID = ?");
-                stmt.setDouble(1, i.getValorBruto());
-                stmt.setDouble(2, i.getSubsidio());
-                stmt.setDouble(3, i.getPago());
-                stmt.setInt(4, i.getId());
-                stmt.executeUpdate();
-                retunEdit = "Imposto editado com sucesso!";
-                System.out.println(retunEdit + " impostoID : " + i.getId());
-            } catch (SQLException ex) {
-                Logger.getLogger(contactsListDAO.class.getName()).log(Level.SEVERE, null, ex);
-                retunEdit = "Erro";
-            } finally {
-                ConnectionFactory.closeConnection(con, stmt);
+            if (i.getId() != 0) {
+                Connection con = ConnectionFactory.getConnection();
+                PreparedStatement stmt = null;
+                try {
+                    stmt = con.prepareStatement("UPDATE impostos SET  valor = ?, subsidio = ?, pago = ?, tipo = ? WHERE impostoID = ?");
+                    stmt.setDouble(1, i.getValorBruto());
+                    stmt.setDouble(2, i.getSubsidio());
+                    stmt.setDouble(3, i.getPago());
+                    stmt.setDouble(4, i.getTipo().getTipoId());
+                    stmt.setInt(5, i.getId());
+                    stmt.executeUpdate();
+                    retunEdit = "Imposto editado com sucesso!\n";
+                    System.out.println(retunEdit + " valor : " + i.getValorBruto() + " impostoID : " + i.getId());
+                } catch (SQLException ex) {
+                    Logger.getLogger(contactsListDAO.class.getName()).log(Level.SEVERE, null, ex);
+                    retunEdit = "Erro";
+                } finally {
+                    ConnectionFactory.closeConnection(con, stmt);
+                }
+            } else if (i.getValorBruto() > 0) {
+                Connection con = ConnectionFactory.getConnection();
+                PreparedStatement stmt = null;
+                try {
+                    stmt = con.prepareStatement("INSERT INTO impostos (valor,subsidio,pago,tipo,propriedadeId) VALUES (?,?,?,?,?)");
+                    stmt.setDouble(1, i.getValorBruto());
+                    stmt.setDouble(2, i.getSubsidio());
+                    stmt.setDouble(3, i.getPago());
+                    stmt.setDouble(4, i.getTipo().getTipoId());
+                    stmt.setInt(5, id);
+                    stmt.executeUpdate();
+                    retunEdit += "Imposto criado com sucesso!";
+                } catch (SQLException ex) {
+                    Logger.getLogger(contactsListDAO.class.getName()).log(Level.SEVERE, null, ex);
+                    retunEdit = "Erro";
+                } finally {
+                    ConnectionFactory.closeConnection(con, stmt);
+                }
             }
         }
         return retunEdit;

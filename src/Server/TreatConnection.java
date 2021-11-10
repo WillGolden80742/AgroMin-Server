@@ -5,6 +5,7 @@
  */
 package Server;
 
+import Model.DAO.agroToxicoDAO;
 import Model.DAO.arquivoDAO;
 import Model.DAO.clientDAO;
 import Model.DAO.contactsListDAO;
@@ -82,6 +83,7 @@ public class TreatConnection implements Runnable {
 
     private Communication executeOperation(String op, Communication communication) {
         messagesDAO mDAO = new messagesDAO();
+        agroToxicoDAO agroDAO = new agroToxicoDAO();
         clientDAO cliDAO = new clientDAO();
         arquivoDAO arqDAO = new arquivoDAO();
         propriedadeDAO propDAO = new propriedadeDAO();
@@ -112,9 +114,13 @@ public class TreatConnection implements Runnable {
                 break;
             case "PROPRIEDADESELECTED":
                 int propriedadeId = (int) communication.getParam("propriedadeId");
+                reply.setParam("PROPRIEDADESELECTEDREPLY", propDAO.read((int) propriedadeId));
                 reply.setParam("IMPOSTOSTOTALREPLY", impDAO.total(propriedadeId));
                 reply.setParam("IMPOSTOSREPLY", impDAO.read(propriedadeId));
-                reply.setParam("PROPRIEDADESELECTEDREPLY", propDAO.read((int) communication.getParam("propriedadeId")));
+                reply.setParam("AGROREADREPLY", agroDAO.read((int) propriedadeId));
+                break;
+            case "AGROLIST":
+                reply.setParam("AGROLISTREPLY", agroDAO.read());
                 break;
             case "PROPRIEDADEDELETE":
                 int propriedadeIdDelete = (int) communication.getParam("propriedadeId");
@@ -128,7 +134,11 @@ public class TreatConnection implements Runnable {
                 break;
             case "IMPOSTOUPDATE":
                 List<Imposto> imp = (List<Imposto>) communication.getParam("imposto");
-                reply.setParam("IMPOSTOUPDATEREPLY", impDAO.impostoEdit(imp));
+                reply.setParam("IMPOSTOUPDATEREPLY", impDAO.impostoEdit(imp, (int) communication.getParam("propriedadeId")));
+                break;
+            case "TIPOREAD":
+                reply.setParam("TIPOREADREPLY", impDAO.readTipo());
+                break;
             case "CNPJCHECK":
                 reply.setParam("CNPJCHECKREPLY", propDAO.checkCNPJ((String) communication.getParam("cnpj")));
                 break;

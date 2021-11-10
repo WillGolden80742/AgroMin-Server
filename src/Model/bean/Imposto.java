@@ -8,8 +8,7 @@ import java.io.Serializable;
  */
 public class Imposto implements Serializable {
 
-    private String nome;
-    private String tipo;
+    private Tipo tipo;
     private double subsidio;
     private Double valor;
     private int pago;
@@ -48,21 +47,14 @@ public class Imposto implements Serializable {
         this.valor = valor;
     }
 
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public String getTipo() {
+    public Tipo getTipo() {
         return tipo;
     }
 
-    public void setTipo(String tipo) {
+    public void setTipo(Tipo tipo) {
         this.tipo = tipo;
     }
+
 
     public int getPago() {
         return pago;
