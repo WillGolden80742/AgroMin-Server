@@ -56,13 +56,14 @@ public class agroToxicoDAO {
         List<Agrotoxico> agrotoxicos = new ArrayList<>();
 
         try {
-            stmt = con.prepareStatement("SELECT agrotoxico.agrotoxicoID, agrotoxico.nome, agrotoxico.ingredienteAtivo FROM agrotoxico");
+            stmt = con.prepareStatement("SELECT agrotoxico.agrotoxicoID, agrotoxico.nome, agrotoxico.ingredienteAtivo, agrotoxico.aprovado FROM agrotoxico");
             rs = stmt.executeQuery();
             while (rs.next()) {
                 Agrotoxico a = new Agrotoxico();
                 a.setAgroId(rs.getInt("agrotoxico.agrotoxicoID"));
                 a.setNome(rs.getString("agrotoxico.nome"));
                 a.setIngrediente(rs.getString("agrotoxico.ingredienteAtivo"));
+                a.setAprovado(rs.getInt("agrotoxico.aprovado"));
                 agrotoxicos.add(a);
             }
         } catch (SQLException ex) {
@@ -71,5 +72,40 @@ public class agroToxicoDAO {
             ConnectionFactory.closeConnection(con, stmt, rs);
         }
         return agrotoxicos;
+    }
+
+    public String agroEdit(List<Agrotoxico> agro, int id) {
+        String retunEdit = "";
+        delete(id);
+        for (Agrotoxico i : agro) {
+            Connection con = ConnectionFactory.getConnection();
+            PreparedStatement stmt = null;
+            try {
+                stmt = con.prepareStatement("INSERT INTO agrotoxicoPropriedade (propriedade,agrotoxico) VALUES (?,?)");
+                stmt.setDouble(1, id);
+                stmt.setDouble(2, i.getAgroId());
+                stmt.executeUpdate();
+                retunEdit = "Agrotoxico editado com sucesso!";
+            } catch (SQLException ex) {
+                Logger.getLogger(contactsListDAO.class.getName()).log(Level.SEVERE, null, ex);
+                retunEdit = "Erro";
+            } finally {
+                ConnectionFactory.closeConnection(con, stmt);
+            }
+        }
+        return retunEdit;
+    }
+
+    public void delete(int id) {
+        Connection con = ConnectionFactory.getConnection();
+        PreparedStatement stmt = null;
+        try {
+            stmt = con.prepareStatement("DELETE FROM agrotoxicoPropriedade WHERE propriedade = '" + id + "'");
+            stmt.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(contactsListDAO.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            ConnectionFactory.closeConnection(con, stmt);
+        }
     }
 }

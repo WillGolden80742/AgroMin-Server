@@ -12,6 +12,7 @@ import Model.DAO.contactsListDAO;
 import Model.DAO.impostosDAO;
 import Model.DAO.messagesDAO;
 import Model.DAO.propriedadeDAO;
+import Model.bean.Agrotoxico;
 import Model.bean.Endereco;
 import Model.bean.Imposto;
 import Model.bean.Propriedade;
@@ -135,6 +136,10 @@ public class TreatConnection implements Runnable {
             case "IMPOSTOUPDATE":
                 List<Imposto> imp = (List<Imposto>) communication.getParam("imposto");
                 reply.setParam("IMPOSTOUPDATEREPLY", impDAO.impostoEdit(imp, (int) communication.getParam("propriedadeId")));
+                break;
+            case "AGROUPDATE":
+                List<Agrotoxico> agro = (List<Agrotoxico>) communication.getParam("agrotoxicos");
+                reply.setParam("AGROUPDATEREPLY", agroDAO.agroEdit(agro, (int) communication.getParam("propriedadeId")));
                 break;
             case "TIPOREAD":
                 reply.setParam("TIPOREADREPLY", impDAO.readTipo());

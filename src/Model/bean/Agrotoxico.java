@@ -15,6 +15,7 @@ public class Agrotoxico implements Serializable {
     private String nome;
     private String ingrediente;
     private int agroId;
+    private int aprovado;
 
     public String getNome() {
         return nome;
@@ -38,6 +39,14 @@ public class Agrotoxico implements Serializable {
 
     public void setAgroId(int agroId) {
         this.agroId = agroId;
+    }
+
+    public int getAprovado() {
+        return aprovado;
+    }
+
+    public void setAprovado(int aprovado) {
+        this.aprovado = aprovado;
     }
 
 }
