@@ -11,10 +11,12 @@ import Model.DAO.clientDAO;
 import Model.DAO.contactsListDAO;
 import Model.DAO.impostosDAO;
 import Model.DAO.messagesDAO;
+import Model.DAO.produtoDAO;
 import Model.DAO.propriedadeDAO;
 import Model.bean.Agrotoxico;
 import Model.bean.Endereco;
 import Model.bean.Imposto;
+import Model.bean.Produto;
 import Model.bean.Propriedade;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -88,6 +90,7 @@ public class TreatConnection implements Runnable {
         clientDAO cliDAO = new clientDAO();
         arquivoDAO arqDAO = new arquivoDAO();
         propriedadeDAO propDAO = new propriedadeDAO();
+        produtoDAO prodDAO = new produtoDAO();
         impostosDAO impDAO = new impostosDAO();
         contactsListDAO contactDAO = new contactsListDAO();
         Communication reply = new Communication(op + "REPLY");
@@ -112,6 +115,12 @@ public class TreatConnection implements Runnable {
                 String nome = (String) communication.getParam("nome");
                 String cnpj = (String) communication.getParam("cnpj");
                 reply.setParam("PROPRIEDADESREPLY", propDAO.read(nome, cnpj));
+                break;
+            case "PRODUTOS":
+                reply.setParam("PRODUTOSREPLY", prodDAO.read((int) communication.getParam("propriedadeId")));
+                break;
+            case "PRODUTOSUPDATE":
+                reply.setParam("PRODUTOSUPDATEREPLY",prodDAO.prodEdit((List<Produto>) communication.getParam("produtos"),(int)communication.getParam("propriedadeId")));
                 break;
             case "PROPRIEDADESELECTED":
                 int propriedadeId = (int) communication.getParam("propriedadeId");

@@ -16,6 +16,7 @@ public class Propriedade implements Serializable {
     private int numeroEmpregados;
     private int nivelAutomacao;
     private Endereco endereco;
+    private double producaoAnual;
 
     public Endereco getEndereco() {
         return endereco;
@@ -24,8 +25,6 @@ public class Propriedade implements Serializable {
     public void setEndereco(Endereco endereco) {
         this.endereco = endereco;
     }
-
-
 
     public int getPropriedadeId() {
         return propriedadeId;
@@ -82,6 +81,14 @@ public class Propriedade implements Serializable {
 
     public void setNivelAutomacao(int nivelAutomacao) {
         this.nivelAutomacao = nivelAutomacao;
+    }
+
+    public double getProducaoAnual() {
+        return producaoAnual;
+    }
+
+    public void setProducaoAnual(double producaoAnual) {
+        this.producaoAnual = producaoAnual;
     }
 
 }

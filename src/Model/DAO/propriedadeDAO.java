@@ -7,7 +7,6 @@ package Model.DAO;
 
 import ConnectionFactory.ConnectionFactory;
 import Model.bean.Endereco;
-import Model.bean.Imposto;
 import Model.bean.Propriedade;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -74,18 +73,14 @@ public class propriedadeDAO {
     }
 
     public Propriedade read(int id) {
-
         Connection con = ConnectionFactory.getConnection();
-
         PreparedStatement stmt = null;
         ResultSet rs = null;
         Propriedade propriedades = new Propriedade();
-
         try {
             stmt = con.prepareStatement("SELECT * FROM propriedades where propriedades.propriedadeId ='" + id + "'");
             rs = stmt.executeQuery();
             while (rs.next()) {
-
                 propriedades.setPropriedadeId(rs.getInt("propriedadeId"));
                 propriedades.setCpnj(rs.getString("cpnj"));
                 propriedades.setNome(rs.getString("nome"));
@@ -94,6 +89,16 @@ public class propriedadeDAO {
                 propriedades.setMaquinas(rs.getInt("maquinas"));
                 propriedades.setNivelAutomacao(rs.getInt("nivelAutomacao"));
 
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(contactsListDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        try {
+            stmt = con.prepareStatement("SELECT SUM(produto.producaoAnual) as total FROM produto where propriedadeId ='" + id + "'");
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+                propriedades.setProducaoAnual(rs.getDouble("total"));
             }
         } catch (SQLException ex) {
             Logger.getLogger(contactsListDAO.class.getName()).log(Level.SEVERE, null, ex);
