@@ -6,14 +6,18 @@
 package Model.DAO;
 
 import ConnectionFactory.ConnectionFactory;
+import Model.bean.Cliente;
 import Model.bean.ProfilePic;
 import com.mysql.jdbc.exceptions.MySQLSyntaxErrorException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -269,5 +273,48 @@ public class clientDAO {
 
     public String biometricAuthenticated(String string, String string0) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public List<Cliente> read() {
+
+        Connection con = ConnectionFactory.getConnection();
+        PreparedStatement stmt = null;
+        ResultSet rs;
+        List<Cliente> clientes = new ArrayList<>();
+        try {
+            stmt = con.prepareStatement("SELECT * FROM clientes");
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+                Cliente c = new Cliente();
+                c.setNickName(rs.getString("nickName"));
+                c.setNivel(rs.getInt("level"));
+                clientes.add(c);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(clientDAO.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            ConnectionFactory.closeConnection(con, stmt);
+        }
+        return clientes;
+    }
+
+    public void editLevel(String nickName, int level) {
+        Connection con = ConnectionFactory.getConnection();
+        PreparedStatement stmt = null;
+        try {
+            stmt = con.prepareStatement("UPDATE clientes SET level = ? WHERE nickName = ?");
+            stmt.setInt(1, level);
+            stmt.setString(2, nickName);
+            stmt.executeUpdate();
+            JOptionPane.showMessageDialog(null,"Nível alterado com sucesso!");
+        } catch (NullPointerException ex) {
+            JOptionPane.showMessageDialog(null,"Erro : "+ex.toString()); 
+        } catch (MySQLSyntaxErrorException ex) {
+            JOptionPane.showMessageDialog(null,"Erro : "+ex.toString()); 
+            Logger.getLogger(clientDAO.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null,"Erro : "+ex.toString()); 
+            Logger.getLogger(clientDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }

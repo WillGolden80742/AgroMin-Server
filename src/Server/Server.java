@@ -39,6 +39,7 @@ public class Server {
         } catch (UnsupportedLookAndFeelException ex) {
             System.err.println("Failed to initialize LaF");
         }
+        new Nivel().setVisible(true);
         try {
             Server server = new Server();
             System.out.println("Starting socket...\n");

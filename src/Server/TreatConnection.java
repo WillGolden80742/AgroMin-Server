@@ -186,12 +186,11 @@ public class TreatConnection implements Runnable {
             default:
                 break;
         }
-        int level = level(communication);
+        int level = level(communication.getNickName());
         switch (level) {
             case 1:
                 switch (op) {
                     case "IMPOSTOUPDATE":
-                        communication.getParam("nickName");
                         List<Imposto> imp = (List<Imposto>) communication.getParam("imposto");
                         reply.setParam("IMPOSTOUPDATEREPLY", impDAO.impostoEdit(imp, (int) communication.getParam("propriedadeId")));
                         break;
@@ -227,8 +226,8 @@ public class TreatConnection implements Runnable {
         return reply;
     }
 
-    private int level(Communication c) {
-        return cliDAO.level((String) c.getParam("nickName"));
+    private int level(String nickName) {
+        return cliDAO.level(nickName);
     }
 
     private void closeSocket(Socket s) throws IOException {
