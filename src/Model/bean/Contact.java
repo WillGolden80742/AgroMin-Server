@@ -14,6 +14,7 @@ import java.io.Serializable;
 public class Contact implements Serializable {
     private String nome;
     private String nickName;
+    private Device device;
 
     public String getNickName() {
         return nickName;
@@ -29,6 +30,14 @@ public class Contact implements Serializable {
 
     public void setNome(String nome) {
         this.nome = nome;
+    }
+
+    public Device getDevice() {
+        return device;
+    }
+
+    public void setDevice(Device device) {
+        this.device = device;
     }
 
 }

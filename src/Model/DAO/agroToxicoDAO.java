@@ -40,7 +40,7 @@ public class agroToxicoDAO {
                 agrotoxicos.add(a);
             }
         } catch (SQLException ex) {
-            Logger.getLogger(contactsListDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(agroToxicoDAO.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             ConnectionFactory.closeConnection(con, stmt, rs);
         }
@@ -67,7 +67,7 @@ public class agroToxicoDAO {
                 agrotoxicos.add(a);
             }
         } catch (SQLException ex) {
-            Logger.getLogger(contactsListDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(agroToxicoDAO.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             ConnectionFactory.closeConnection(con, stmt, rs);
         }
@@ -87,7 +87,7 @@ public class agroToxicoDAO {
                 stmt.executeUpdate();
                 retunEdit = "Agrotoxico editado com sucesso!";
             } catch (SQLException ex) {
-                Logger.getLogger(contactsListDAO.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(agroToxicoDAO.class.getName()).log(Level.SEVERE, null, ex);
                 retunEdit = "Erro";
             } finally {
                 ConnectionFactory.closeConnection(con, stmt);
@@ -103,7 +103,7 @@ public class agroToxicoDAO {
             stmt = con.prepareStatement("DELETE FROM agrotoxicoPropriedade WHERE propriedade = '" + id + "'");
             stmt.executeUpdate();
         } catch (SQLException ex) {
-            Logger.getLogger(contactsListDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(agroToxicoDAO.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             ConnectionFactory.closeConnection(con, stmt);
         }

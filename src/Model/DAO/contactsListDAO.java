@@ -7,6 +7,7 @@ package Model.DAO;
 
 import ConnectionFactory.ConnectionFactory;
 import Model.bean.Contact;
+import Model.bean.Device;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -47,24 +48,6 @@ public class contactsListDAO {
         return Contatos;
     }
 
-    public int checkContact(String contactNickName, String nickName) {
-        Connection con = ConnectionFactory.getConnection();
-        PreparedStatement stmt = null;
-        ResultSet rs;
-        int count = 1;
-        try {
-            stmt = con.prepareStatement("SELECT count(messages.Idmessage) as checkNickName FROM messages WHERE messages.MsgFrom = '"+nickName+"' AND messages.MsgTo = '"+contactNickName+"' OR messages.MsgFrom = '"+contactNickName+"' AND messages.MsgTo = '"+nickName+"'");
-            rs = stmt.executeQuery();
-            while (rs.next()) {
-                    count = rs.getInt("checkNickName");
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(contactsListDAO.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            ConnectionFactory.closeConnection(con, stmt);
-        }
-        return count;
-    }
 
     public Contact search(String nickName) {
 
@@ -77,8 +60,11 @@ public class contactsListDAO {
             stmt = con.prepareStatement("SELECT * FROM clientes WHERE clientes.nickName LIKE '" + nickName + "'");
             rs = stmt.executeQuery();
             while (rs.next()) {
+                Device d = new Device();
                 contact.setNickName(rs.getString("nickName"));
                 contact.setNome(rs.getString("nomeCliente"));
+                d.setDeviceID(rs.getString("deviceID"));
+                contact.setDevice(d);
             }
         } catch (SQLException ex) {
             Logger.getLogger(contactsListDAO.class.getName()).log(Level.SEVERE, null, ex);

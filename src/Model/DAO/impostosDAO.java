@@ -45,7 +45,7 @@ public class impostosDAO {
                 impostos.add(i);
             }
         } catch (SQLException ex) {
-            Logger.getLogger(contactsListDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(impostosDAO.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             ConnectionFactory.closeConnection(con, stmt, rs);
         }
@@ -70,7 +70,7 @@ public class impostosDAO {
                 tipos.add(t);
             }
         } catch (SQLException ex) {
-            Logger.getLogger(contactsListDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(impostosDAO.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             ConnectionFactory.closeConnection(con, stmt, rs);
         }
@@ -94,7 +94,7 @@ public class impostosDAO {
                     retunEdit = "Imposto editado com sucesso!\n";
                     System.out.println(retunEdit + " valor : " + i.getValorBruto() + " impostoID : " + i.getId());
                 } catch (SQLException ex) {
-                    Logger.getLogger(contactsListDAO.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(impostosDAO.class.getName()).log(Level.SEVERE, null, ex);
                     retunEdit = "Erro";
                 } finally {
                     ConnectionFactory.closeConnection(con, stmt);
@@ -112,7 +112,7 @@ public class impostosDAO {
                     stmt.executeUpdate();
                     retunEdit += "Imposto criado com sucesso!";
                 } catch (SQLException ex) {
-                    Logger.getLogger(contactsListDAO.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(impostosDAO.class.getName()).log(Level.SEVERE, null, ex);
                     retunEdit = "Erro";
                 } finally {
                     ConnectionFactory.closeConnection(con, stmt);
@@ -137,7 +137,7 @@ public class impostosDAO {
                 total = rs.getDouble("Total");
             }
         } catch (SQLException ex) {
-            Logger.getLogger(contactsListDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(impostosDAO.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             ConnectionFactory.closeConnection(con, stmt, rs);
         }

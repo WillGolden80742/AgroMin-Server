@@ -5,7 +5,6 @@
 package Model.DAO;
 
 import ConnectionFactory.ConnectionFactory;
-import Model.bean.Agrotoxico;
 import Model.bean.Produto;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -59,7 +58,7 @@ public class produtoDAO {
                     stmt.executeUpdate();
                     retunEdit = "Produto editado com sucesso!";
                 } catch (SQLException ex) {
-                    Logger.getLogger(contactsListDAO.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(produtoDAO.class.getName()).log(Level.SEVERE, null, ex);
                     retunEdit = "Erro";
                 } finally {
                     ConnectionFactory.closeConnection(con, stmt);
@@ -76,7 +75,7 @@ public class produtoDAO {
             stmt = con.prepareStatement("DELETE FROM produto WHERE propriedadeId = '" + id + "'");
             stmt.executeUpdate();
         } catch (SQLException ex) {
-            Logger.getLogger(contactsListDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(produtoDAO.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             ConnectionFactory.closeConnection(con, stmt);
         }

@@ -21,24 +21,25 @@ import java.util.logging.Logger;
  */
 public class clientDAO {
 
-    public String authenticated(String nickName, String password) {
-        String reply = "Nickname ou senha errada!";
+    public String[] authenticated(String nickName, String password) {
+        String[] reply = {"Nickname ou senha errada!", ""};
         Connection con = ConnectionFactory.getConnection();
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
-            stmt = con.prepareStatement("SELECT count(nickName) as result FROM clientes WHERE nickName='" + nickName + "' AND senha = '" + password + "'");
+            stmt = con.prepareStatement("SELECT count(nickName) as result, level FROM clientes WHERE nickName='" + nickName + "' AND senha = '" + password + "'");
             rs = stmt.executeQuery();
             while (rs.next()) {
                 if (rs.getInt("result") == 1) {
-                    reply = "OK";
+                    reply[0] = "OK";
+                    reply[1] = String.valueOf(rs.getInt("level"));
                     System.out.println("Autenticado");
                 }
             }
         } catch (MySQLSyntaxErrorException ex) {
-            Logger.getLogger(contactsListDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(clientDAO.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
-            Logger.getLogger(contactsListDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(clientDAO.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             ConnectionFactory.closeConnection(con, stmt, rs);
         }
@@ -46,31 +47,51 @@ public class clientDAO {
     }
 
     public String[] biometricAuthenticated(String deviceID) {
-        String[] reply = {"Celular não cadastrado!","",""};
+        String[] reply = {"Celular não cadastrado!", "", "", ""};
         Connection con = ConnectionFactory.getConnection();
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
-            stmt = con.prepareStatement("SELECT count(nickName) as result, nickName, nomeCliente FROM clientes WHERE deviceID ='" + deviceID +"'");
+            stmt = con.prepareStatement("SELECT count(nickName) as result, nickName, nomeCliente, level FROM clientes WHERE deviceID ='" + deviceID + "'");
             rs = stmt.executeQuery();
             while (rs.next()) {
                 if (rs.getInt("result") == 1) {
                     reply[0] = "OK";
                     reply[1] = rs.getString("nickName");
-                    reply[2] = "Bem vindo, "+rs.getString("nomeCliente")+"!";
+                    reply[2] = "Bem vindo, " + rs.getString("nomeCliente") + "!";
+                    reply[3] = String.valueOf(rs.getString("level"));
                     System.out.println("Autenticado");
                 }
             }
         } catch (MySQLSyntaxErrorException ex) {
-            Logger.getLogger(contactsListDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(clientDAO.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
-            Logger.getLogger(contactsListDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(clientDAO.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             ConnectionFactory.closeConnection(con, stmt, rs);
         }
         return reply;
-    }    
-    
+    }
+
+    public int level(String nickName) {
+        Connection con = ConnectionFactory.getConnection();
+        PreparedStatement stmt = null;
+        ResultSet rs;
+        int level = 0;
+        try {
+            stmt = con.prepareStatement("SELECT level FROM clientes WHERE clientes.nickName LIKE '" + nickName + "'");
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+                level = rs.getInt("level");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(clientDAO.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            ConnectionFactory.closeConnection(con, stmt);
+        }
+        return level;
+    }
+
     public int checkClient(String nickName) {
         Connection con = ConnectionFactory.getConnection();
         PreparedStatement stmt = null;
@@ -83,7 +104,26 @@ public class clientDAO {
                 count = rs.getInt("checkNickName");
             }
         } catch (SQLException ex) {
-            Logger.getLogger(contactsListDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(clientDAO.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            ConnectionFactory.closeConnection(con, stmt);
+        }
+        return count;
+    }
+
+    public int checkDevice(String deviceID) {
+        Connection con = ConnectionFactory.getConnection();
+        PreparedStatement stmt = null;
+        ResultSet rs;
+        int count = 0;
+        try {
+            stmt = con.prepareStatement("SELECT COUNT(clientes.deviceID) AS deviceID  FROM clientes WHERE clientes.deviceID LIKE '" + deviceID + "'");
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+                count = rs.getInt("deviceID");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(clientDAO.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             ConnectionFactory.closeConnection(con, stmt);
         }
@@ -99,17 +139,17 @@ public class clientDAO {
             stmt.setString(1, name);
             stmt.setString(2, nickName);
             stmt.setString(3, password);
-            stmt.setString(4, deviceID);            
+            stmt.setString(4, deviceID);
             stmt.executeUpdate();
             reply = "OK";
         } catch (NullPointerException ex) {
             reply = ex.toString();
         } catch (MySQLSyntaxErrorException ex) {
             reply = ex.toString();
-            Logger.getLogger(contactsListDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(clientDAO.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
             reply = ex.toString();
-            Logger.getLogger(contactsListDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(clientDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         try {
             stmt = con.prepareStatement("INSERT INTO profilepicture (profilepicture.clienteId,profilepicture.picture,profilepicture.format) VALUES (?,?,?)");
@@ -123,9 +163,9 @@ public class clientDAO {
             ConnectionFactory.closeConnection(con, stmt);
         }
         return reply;
-    } 
+    }
 
-    public String editAccount(byte[] picture, String format, String name, String nickName, String password) {
+    public String editAccount(byte[] picture, String format, String name, String nickName, String deviceID, String password) {
         String reply;
         Connection con = ConnectionFactory.getConnection();
         PreparedStatement stmt = null;
@@ -139,10 +179,21 @@ public class clientDAO {
             reply = ex.toString();
         } catch (MySQLSyntaxErrorException ex) {
             reply = ex.toString();
-            Logger.getLogger(contactsListDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(clientDAO.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
             reply = ex.toString();
-            Logger.getLogger(contactsListDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(clientDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        try {
+            stmt = con.prepareStatement("UPDATE clientes SET deviceID = ? WHERE nickName = ?");
+            stmt.setString(1, deviceID);
+            stmt.setString(2, nickName);
+            stmt.executeUpdate();
+            reply += "\nDISPOSITVO CADASTRADO!";
+        } catch (MySQLSyntaxErrorException | NullPointerException ex) {
+            System.out.print("Sem cadastro de dispositivo");
+        } catch (SQLException ex) {
+            System.out.print("Sem cadastro de dispositivo");
         }
         try {
             stmt = con.prepareStatement("UPDATE clientes SET senha = ? WHERE nickName = ?");
@@ -209,7 +260,7 @@ public class clientDAO {
                 profilePic.setFormat(rs.getString("format"));
             }
         } catch (SQLException ex) {
-            Logger.getLogger(contactsListDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(clientDAO.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             ConnectionFactory.closeConnection(con, stmt, rs);
         }

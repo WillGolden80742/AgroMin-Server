@@ -61,7 +61,7 @@ public class propriedadeDAO {
                 propriedades.add(p);
             }
         } catch (SQLException ex) {
-            Logger.getLogger(contactsListDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(propriedadeDAO.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             ConnectionFactory.closeConnection(con, stmt, rs);
         }
@@ -91,7 +91,7 @@ public class propriedadeDAO {
 
             }
         } catch (SQLException ex) {
-            Logger.getLogger(contactsListDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(propriedadeDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         try {
@@ -101,7 +101,7 @@ public class propriedadeDAO {
                 propriedades.setProducaoAnual(rs.getDouble("total"));
             }
         } catch (SQLException ex) {
-            Logger.getLogger(contactsListDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(propriedadeDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         try {
@@ -115,7 +115,7 @@ public class propriedadeDAO {
                 propriedades.setEndereco(endereco);
             }
         } catch (SQLException ex) {
-            Logger.getLogger(contactsListDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(propriedadeDAO.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             ConnectionFactory.closeConnection(con, stmt, rs);
         }
@@ -136,7 +136,7 @@ public class propriedadeDAO {
             stmt.executeUpdate();
             return "Endereço editado com sucesso!";
         } catch (SQLException ex) {
-            Logger.getLogger(contactsListDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(propriedadeDAO.class.getName()).log(Level.SEVERE, null, ex);
             setStatus(ex.toString());
             return "Erro";
         } finally {
@@ -159,7 +159,7 @@ public class propriedadeDAO {
             stmt.executeUpdate();
             return "Propriedade editado com sucesso!";
         } catch (SQLException ex) {
-            Logger.getLogger(contactsListDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(propriedadeDAO.class.getName()).log(Level.SEVERE, null, ex);
             setStatus(ex.toString());
             return "Erro";
         } finally {
@@ -181,7 +181,7 @@ public class propriedadeDAO {
             stmt.executeUpdate();
             return "Propriedade criada com sucesso!";
         } catch (SQLException ex) {
-            Logger.getLogger(contactsListDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(propriedadeDAO.class.getName()).log(Level.SEVERE, null, ex);
             setStatus(ex.toString());
             return "Erro";
         } finally {
@@ -201,7 +201,7 @@ public class propriedadeDAO {
                 count = rs.getInt("cpnj");
             }
         } catch (SQLException ex) {
-            Logger.getLogger(contactsListDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(propriedadeDAO.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             ConnectionFactory.closeConnection(con, stmt);
         }
@@ -216,7 +216,7 @@ public class propriedadeDAO {
             setStatus("SUCCESSFULL");
             stmt.executeUpdate();
         } catch (SQLException ex) {
-            Logger.getLogger(contactsListDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(propriedadeDAO.class.getName()).log(Level.SEVERE, null, ex);
             setStatus(ex.toString());
         } finally {
             ConnectionFactory.closeConnection(con, stmt);
@@ -232,7 +232,7 @@ public class propriedadeDAO {
             stmt.executeUpdate();
             delete = "Propriedade deletado com sucesso!";
         } catch (SQLException ex) {
-            Logger.getLogger(contactsListDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(propriedadeDAO.class.getName()).log(Level.SEVERE, null, ex);
             delete = "Erro!";
         } finally {
             ConnectionFactory.closeConnection(con, stmt);

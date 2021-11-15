@@ -36,7 +36,7 @@ public class arquivoDAO {
                 arquivo.setArquivo(rs.getBytes("arquivo"));
             }
         } catch (SQLException ex) {
-            Logger.getLogger(contactsListDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(arquivoDAO.class.getName()).log(Level.SEVERE, null, ex);
         }  finally {
             ConnectionFactory.closeConnection(con,stmt,rs);
         }
@@ -57,7 +57,7 @@ public class arquivoDAO {
                 count = rs.getInt("checkHash");
             }
         } catch (SQLException ex) {
-            Logger.getLogger(contactsListDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(arquivoDAO.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             ConnectionFactory.closeConnection(con,stmt,rs);
         }

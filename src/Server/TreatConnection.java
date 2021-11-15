@@ -10,7 +10,6 @@ import Model.DAO.arquivoDAO;
 import Model.DAO.clientDAO;
 import Model.DAO.contactsListDAO;
 import Model.DAO.impostosDAO;
-import Model.DAO.messagesDAO;
 import Model.DAO.produtoDAO;
 import Model.DAO.propriedadeDAO;
 import Model.bean.Agrotoxico;
@@ -36,6 +35,7 @@ public class TreatConnection implements Runnable {
 
     private Socket socket;
     private States states = States.CONNECTED;
+    private clientDAO cliDAO;
 
     public TreatConnection(Socket socket) {
         this.socket = socket;
@@ -85,9 +85,8 @@ public class TreatConnection implements Runnable {
     }
 
     private Communication executeOperation(String op, Communication communication) {
-        messagesDAO mDAO = new messagesDAO();
         agroToxicoDAO agroDAO = new agroToxicoDAO();
-        clientDAO cliDAO = new clientDAO();
+        cliDAO = new clientDAO();
         arquivoDAO arqDAO = new arquivoDAO();
         propriedadeDAO propDAO = new propriedadeDAO();
         produtoDAO prodDAO = new produtoDAO();
@@ -100,12 +99,14 @@ public class TreatConnection implements Runnable {
                 reply.setParam("BIOMETRICREPLY", biometricReply[0]);
                 reply.setParam("NICKNAME", biometricReply[1]);
                 reply.setParam("WELCOME", biometricReply[2]);
+                reply.setParam("LEVEL", biometricReply[3]);
                 System.out.println("login reply :" + biometricReply[0]);
                 break;
             case "LOGIN":
-                String loginReply = cliDAO.authenticated((String) communication.getParam("nickName"), (String) communication.getParam("password"));
-                reply.setParam("LOGINREPLY", loginReply);
-                System.out.println("login reply :" + loginReply);
+                String[] loginReply = cliDAO.authenticated((String) communication.getParam("nickName"), (String) communication.getParam("password"));
+                reply.setParam("LOGINREPLY", loginReply[0]);
+                reply.setParam("LEVEL", loginReply[1]);
+                System.out.println("login reply :" + loginReply[0]);
                 break;
             case "READ":
                 contactsListDAO cDAO = new contactsListDAO();
@@ -120,17 +121,11 @@ public class TreatConnection implements Runnable {
                 reply.setParam("PRODUTOSREPLY", prodDAO.read((int) communication.getParam("propriedadeId")));
                 break;
             case "PRODUTOSUPDATE":
-                reply.setParam("PRODUTOSUPDATEREPLY",prodDAO.prodEdit((List<Produto>) communication.getParam("produtos"),(int)communication.getParam("propriedadeId")));
+                reply.setParam("PRODUTOSUPDATEREPLY", prodDAO.prodEdit((List<Produto>) communication.getParam("produtos"), (int) communication.getParam("propriedadeId")));
                 break;
             case "PROPRIEDADESELECTED":
                 int propriedadeId = (int) communication.getParam("propriedadeId");
                 reply.setParam("PROPRIEDADESELECTEDREPLY", propDAO.read((int) propriedadeId));
-                reply.setParam("IMPOSTOSTOTALREPLY", impDAO.total(propriedadeId));
-                reply.setParam("IMPOSTOSREPLY", impDAO.read(propriedadeId));
-                reply.setParam("AGROREADREPLY", agroDAO.read((int) propriedadeId));
-                break;
-            case "AGROLIST":
-                reply.setParam("AGROLISTREPLY", agroDAO.read());
                 break;
             case "PROPRIEDADEDELETE":
                 int propriedadeIdDelete = (int) communication.getParam("propriedadeId");
@@ -142,65 +137,23 @@ public class TreatConnection implements Runnable {
             case "PROPRIEDADEUPDATE":
                 reply.setParam("PROPRIEDADEUPDATEREPLY", propDAO.propriedadeEdit((Propriedade) communication.getParam("propriedade")));
                 break;
-            case "IMPOSTOUPDATE":
-                List<Imposto> imp = (List<Imposto>) communication.getParam("imposto");
-                reply.setParam("IMPOSTOUPDATEREPLY", impDAO.impostoEdit(imp, (int) communication.getParam("propriedadeId")));
-                break;
-            case "AGROUPDATE":
-                List<Agrotoxico> agro = (List<Agrotoxico>) communication.getParam("agrotoxicos");
-                reply.setParam("AGROUPDATEREPLY", agroDAO.agroEdit(agro, (int) communication.getParam("propriedadeId")));
-                break;
-            case "TIPOREAD":
-                reply.setParam("TIPOREADREPLY", impDAO.readTipo());
-                break;
             case "CNPJCHECK":
                 reply.setParam("CNPJCHECKREPLY", propDAO.checkCNPJ((String) communication.getParam("cnpj")));
                 break;
             case "PROPRIEDADECREATE":
                 reply.setParam("PROPRIEDADECREATEREPLY", propDAO.create((Propriedade) communication.getParam("propriedade")));
                 break;
-//            case "MESSAGENOTRECEIVED": {
-//                try {
-//                    Thread.sleep(1000);
-//                } catch (InterruptedException ex) {
-//                    Logger.getLogger(TreatConnection.class.getName()).log(Level.SEVERE, null, ex);
-//                }
-//                reply.setParam("MESSAGENOTRECEIVEDREPLY", mDAO.readNotReceived((String) communication.getParam("nickName"), (String) communication.getParam("contactNickName")));
-//                break;
-//            }
-//            case "MESSAGENOTRECEIVEDALLCONTACTS": {
-//                try {
-//                    Thread.sleep(2000);
-//                } catch (InterruptedException ex) {
-//                    Logger.getLogger(TreatConnection.class.getName()).log(Level.SEVERE, null, ex);
-//                }
-//                reply.setParam("MESSAGENOTRECEIVEDALLCONTACTSREPLY", mDAO.readNotReceivedAllContacts((String) communication.getParam("nickName")));
-//                break;
-//            }
-//            case "MESSAGE":
-//                List<Message> message = mDAO.read((String) communication.getParam("nickName"), (String) communication.getParam("contactNickName"));
-//                reply.setParam("MESSAGEREPLY", message);
-//                break;
-//            case "CREATEMESSAGE":
-//                mDAO.create((Message) communication.getParam("SENDEDMESSAGE"));
-//                reply.setParam("STATUSMESSAGE", mDAO.getStatus());
-//                break;
-//            case "DELETEMESSAGE":
-//                mDAO.delete((int) communication.getParam("idMessage"), (String) communication.getParam("msgFrom"), (String) communication.getParam("msgTo"));
-//                reply.setParam("STATUSMESSAGE", mDAO.getStatus());
-//                break;
             case "DOWNLOADFILE":
                 reply.setParam("DOWNLOADFILEREPLY", arqDAO.read((String) communication.getParam("nomeHash")));
                 break;
             case "CHECKFILE":
                 reply.setParam("CHECKFILEREPLY", arqDAO.checkFile((String) communication.getParam("nomeHash")));
-                System.out.print("count " + arqDAO.checkFile((String) communication.getParam("nomeHash")));
                 break;
             case "CHECKCLIENT":
                 reply.setParam("CHECKCLIENTREPLY", cliDAO.checkClient((String) communication.getParam("nickName")));
                 break;
-            case "CHECKCONTACT":
-                reply.setParam("CHECKCONTACTREPLY", contactDAO.checkContact((String) communication.getParam("nickName"), (String) communication.getParam("contactNickName")));
+            case "CHECKDEVICE":
+                reply.setParam("CHECKDEVICEREPLY", cliDAO.checkDevice((String) communication.getParam("ANDROIDID")));
                 break;
             case "SEARCHCONTACT":
                 reply.setParam("SEARCHCONTACTREPLY", contactDAO.search((String) communication.getParam("nickName")));
@@ -219,8 +172,9 @@ public class TreatConnection implements Runnable {
                 String formatE = (String) communication.getParam("format");
                 String nameE = (String) communication.getParam("name");
                 String nickNameE = (String) communication.getParam("nickName");
+                String deviceIDE = (String) communication.getParam("deviceID");
                 String passwordE = (String) communication.getParam("password");
-                reply.setParam("EDITACCOUNTREPLY", cliDAO.editAccount(pictureE, formatE, nameE, nickNameE, passwordE));
+                reply.setParam("EDITACCOUNTREPLY", cliDAO.editAccount(pictureE, formatE, nameE, nickNameE, deviceIDE, passwordE));
                 break;
             case "PROFILEIMAGE":
                 reply.setParam("PROFILEIMAGEREPLY", cliDAO.profilePic((String) communication.getParam("nickName")));
@@ -232,7 +186,49 @@ public class TreatConnection implements Runnable {
             default:
                 break;
         }
+        int level = level(communication);
+        switch (level) {
+            case 1:
+                switch (op) {
+                    case "IMPOSTOUPDATE":
+                        communication.getParam("nickName");
+                        List<Imposto> imp = (List<Imposto>) communication.getParam("imposto");
+                        reply.setParam("IMPOSTOUPDATEREPLY", impDAO.impostoEdit(imp, (int) communication.getParam("propriedadeId")));
+                        break;
+                    case "TIPOREAD":
+                        reply.setParam("TIPOREADREPLY", impDAO.readTipo());
+                        break;
+                    case "PROPRIEDADESELECTED":
+                        int propriedadeId = (int) communication.getParam("propriedadeId");
+                        reply.setParam("PROPRIEDADESELECTEDREPLY", propDAO.read((int) propriedadeId));
+                        reply.setParam("IMPOSTOSTOTALREPLY", impDAO.total(propriedadeId));
+                        reply.setParam("IMPOSTOSREPLY", impDAO.read(propriedadeId));
+                        break;
+                }
+                break;
+            case 2:
+                switch (op) {
+                    case "AGROUPDATE":
+                        List<Agrotoxico> agro = (List<Agrotoxico>) communication.getParam("agrotoxicos");
+                        reply.setParam("AGROUPDATEREPLY", agroDAO.agroEdit(agro, (int) communication.getParam("propriedadeId")));
+                        break;
+                    case "PROPRIEDADESELECTED":
+                        int propriedadeId = (int) communication.getParam("propriedadeId");
+                        reply.setParam("PROPRIEDADESELECTEDREPLY", propDAO.read((int) propriedadeId));
+                        reply.setParam("AGROREADREPLY", agroDAO.read((int) propriedadeId));
+                        break;
+                    case "AGROLIST":
+                        reply.setParam("AGROLISTREPLY", agroDAO.read());
+                }
+                break;
+        }
+
+        // Agrotoxico
         return reply;
+    }
+
+    private int level(Communication c) {
+        return cliDAO.level((String) c.getParam("nickName"));
     }
 
     private void closeSocket(Socket s) throws IOException {
