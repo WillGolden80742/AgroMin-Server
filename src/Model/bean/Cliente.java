@@ -1,16 +1,11 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Model.bean;
 
-/**
- *
- * @author will
- */
-public class Cliente {
+import java.io.Serializable;
 
+public class Cliente implements Serializable {
+    private String nome;
     private String nickName;
+    private Device device;
     private int nivel;
 
     public String getNickName() {
@@ -21,6 +16,22 @@ public class Cliente {
         this.nickName = nickName;
     }
 
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public Device getDevice() {
+        return device;
+    }
+
+    public void setDevice(Device device) {
+        this.device = device;
+    }
+
     public int getNivel() {
         return nivel;
     }
@@ -28,5 +39,7 @@ public class Cliente {
     public void setNivel(int nivel) {
         this.nivel = nivel;
     }
+
+
 
 }

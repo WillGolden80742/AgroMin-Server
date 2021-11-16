@@ -6,9 +6,7 @@
 package Server;
 
 import Model.DAO.agroToxicoDAO;
-import Model.DAO.arquivoDAO;
 import Model.DAO.clientDAO;
-import Model.DAO.contactsListDAO;
 import Model.DAO.impostosDAO;
 import Model.DAO.produtoDAO;
 import Model.DAO.propriedadeDAO;
@@ -87,11 +85,9 @@ public class TreatConnection implements Runnable {
     private Communication executeOperation(String op, Communication communication) {
         agroToxicoDAO agroDAO = new agroToxicoDAO();
         cliDAO = new clientDAO();
-        arquivoDAO arqDAO = new arquivoDAO();
         propriedadeDAO propDAO = new propriedadeDAO();
         produtoDAO prodDAO = new produtoDAO();
         impostosDAO impDAO = new impostosDAO();
-        contactsListDAO contactDAO = new contactsListDAO();
         Communication reply = new Communication(op + "REPLY");
         switch (op) {
             case "BIOMETRIC":
@@ -109,8 +105,7 @@ public class TreatConnection implements Runnable {
                 System.out.println("login reply :" + loginReply[0]);
                 break;
             case "READ":
-                contactsListDAO cDAO = new contactsListDAO();
-                reply.setParam("READREPLY", cDAO.read((String) communication.getParam("nickName")));
+                reply.setParam("READREPLY", cliDAO.read((String) communication.getParam("nickName")));
                 break;
             case "PROPRIEDADES":
                 String nome = (String) communication.getParam("nome");
@@ -143,12 +138,6 @@ public class TreatConnection implements Runnable {
             case "PROPRIEDADECREATE":
                 reply.setParam("PROPRIEDADECREATEREPLY", propDAO.create((Propriedade) communication.getParam("propriedade")));
                 break;
-            case "DOWNLOADFILE":
-                reply.setParam("DOWNLOADFILEREPLY", arqDAO.read((String) communication.getParam("nomeHash")));
-                break;
-            case "CHECKFILE":
-                reply.setParam("CHECKFILEREPLY", arqDAO.checkFile((String) communication.getParam("nomeHash")));
-                break;
             case "CHECKCLIENT":
                 reply.setParam("CHECKCLIENTREPLY", cliDAO.checkClient((String) communication.getParam("nickName")));
                 break;
@@ -156,7 +145,7 @@ public class TreatConnection implements Runnable {
                 reply.setParam("CHECKDEVICEREPLY", cliDAO.checkDevice((String) communication.getParam("ANDROIDID")));
                 break;
             case "SEARCHCONTACT":
-                reply.setParam("SEARCHCONTACTREPLY", contactDAO.search((String) communication.getParam("nickName")));
+                reply.setParam("SEARCHCONTACTREPLY", cliDAO.search((String) communication.getParam("nickName")));
                 break;
             case "CREATEACCOUNT":
                 byte[] pictureC = (byte[]) communication.getParam("picture");

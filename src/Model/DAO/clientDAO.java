@@ -7,6 +7,7 @@ package Model.DAO;
 
 import ConnectionFactory.ConnectionFactory;
 import Model.bean.Cliente;
+import Model.bean.Device;
 import Model.bean.ProfilePic;
 import com.mysql.jdbc.exceptions.MySQLSyntaxErrorException;
 import java.sql.Connection;
@@ -316,5 +317,54 @@ public class clientDAO {
             JOptionPane.showMessageDialog(null,"Erro : "+ex.toString()); 
             Logger.getLogger(clientDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    public Cliente search(String nickName) {
+
+        Connection con = ConnectionFactory.getConnection();
+
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        Cliente contact = new Cliente();
+        try {
+            stmt = con.prepareStatement("SELECT * FROM clientes WHERE clientes.nickName LIKE '" + nickName + "'");
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+                Device d = new Device();
+                contact.setNickName(rs.getString("nickName"));
+                contact.setNome(rs.getString("nomeCliente"));
+                d.setDeviceID(rs.getString("deviceID"));
+                contact.setDevice(d);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(clientDAO.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            ConnectionFactory.closeConnection(con, stmt, rs);
+        }
+        return contact;
+    }
+
+    public List<Cliente> read(String nickName) {
+
+        Connection con = ConnectionFactory.getConnection();
+
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        List<Cliente> clientes = new ArrayList<>();
+        try {
+            stmt = con.prepareStatement("call contatos('" + nickName + "')");
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+                Cliente c = new Cliente();
+                c.setNickName(rs.getString("nickNameContato"));
+                c.setNome(rs.getString("contato"));
+                clientes.add(c);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(clientDAO.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            ConnectionFactory.closeConnection(con, stmt, rs);
+        }
+        return clientes;
     }
 }
